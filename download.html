@@ -129,6 +129,7 @@
         .detail-value {
             color: var(--light);
             font-family: 'Courier New', monospace;
+            direction: ltr;
         }
         
         .download-btn-container {
@@ -264,22 +265,22 @@
                 </div>
                 
                 <div class="message">
-                    <h2 id="file-title">جاري تحميل الملف...</h2>
-                    <p id="file-description">يرجى الانتظار أثناء تحضير الملف للتحميل</p>
+                    <h2 id="file-title">تحميل الملف</h2>
+                    <p id="file-description">انقر على الزر أدناه لبدء تحميل الملف</p>
                 </div>
                 
                 <div class="file-details" id="file-details">
                     <div class="detail-row">
                         <div class="detail-label">اسم الملف:</div>
-                        <div class="detail-value" id="detail-name">غير معروف</div>
+                        <div class="detail-value" id="detail-name">جاري التحميل...</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">تاريخ الرفع:</div>
-                        <div class="detail-value" id="detail-date">جاري التحميل...</div>
+                        <div class="detail-value" id="detail-date">اليوم</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">حالة الملف:</div>
-                        <div class="detail-value" id="detail-status">آمن ومتاح</div>
+                        <div class="detail-value" id="detail-status">آمن ومتاح للتحميل</div>
                     </div>
                 </div>
                 
@@ -298,12 +299,6 @@
                     </ul>
                 </div>
             </div>
-            
-            <div class="loading-container" id="loading-container">
-                <div class="loading-spinner"></div>
-                <h3>جاري التحميل المباشر...</h3>
-                <p>سيبدأ التحميل تلقائيًا خلال لحظات</p>
-            </div>
         </div>
         
         <div class="footer">
@@ -312,116 +307,42 @@
     </div>
 
     <script>
-        // تكوين النظام
-        const TELEGRAM_CONFIG = {
-            BOT_TOKEN: '8552707260:AAFzSMfDkJbX_egvxFK7uoS6fmaepH90CSM',
-            API_URL: 'https://api.telegram.org/bot'
-        };
-        
         // الحصول على معلمات الرابط
         const urlParams = new URLSearchParams(window.location.search);
-        const fileId = urlParams.get('id');
-        const fileName = urlParams.get('name') ? decodeURIComponent(urlParams.get('name')) : 'ملف';
-        const downloadType = urlParams.get('type') || 'button';
+        const telegramFileId = urlParams.get('file_id');
+        const fileName = urlParams.get('file_name') ? decodeURIComponent(urlParams.get('file_name')) : 'ملف غير معروف';
+        const fileId = urlParams.get('id') || 'unknown';
         
         // العناصر الرئيسية
-        const headerText = document.getElementById('header-text');
         const fileTitle = document.getElementById('file-title');
         const fileDescription = document.getElementById('file-description');
         const detailName = document.getElementById('detail-name');
         const detailDate = document.getElementById('detail-date');
         const detailStatus = document.getElementById('detail-status');
-        const buttonContainer = document.getElementById('button-container');
         const downloadBtn = document.getElementById('download-btn');
-        const downloadContent = document.getElementById('download-content');
-        const loadingContainer = document.getElementById('loading-container');
         
         // تهيئة الصفحة
-        async function initPage() {
+        function initPage() {
             // تحديث المعلومات
+            fileTitle.textContent = `تحميل: ${fileName}`;
+            fileDescription.textContent = 'انقر على الزر أدناه لبدء تحميل الملف';
             detailName.textContent = fileName;
             detailDate.textContent = new Date().toLocaleDateString('ar-SA');
+            detailStatus.textContent = 'جاهز للتحميل';
             
-            if (downloadType === 'direct') {
-                // التحويل المباشر للتحميل
-                headerText.textContent = 'تحميل مباشر...';
-                fileTitle.textContent = 'جاري تحميل الملف';
-                fileDescription.textContent = 'سيبدأ التحميل تلقائيًا خلال ثوانٍ';
-                
-                // إخفاء الزر وإظهار مؤشر التحميل
-                downloadContent.style.display = 'none';
-                loadingContainer.style.display = 'block';
-                
-                // بدء التحميل المباشر بعد تأخير قصير
-                setTimeout(initiateDirectDownload, 2000);
-            } else {
-                // صفحة الزر
-                headerText.textContent = 'جاهز للتحميل';
-                fileTitle.textContent = `تحميل: ${fileName}`;
-                fileDescription.textContent = 'انقر على الزر أدناه لبدء تحميل الملف';
-                
-                // إعداد زر التحميل
-                downloadBtn.href = await getDirectDownloadLink();
+            // إعداد زر التحميل
+            if (telegramFileId) {
+                const downloadUrl = `https://api.telegram.org/file/bot8552707260:AAFzSMfDkJbX_egvxFK7uoS6fmaepH90CSM/${telegramFileId}`;
+                downloadBtn.href = downloadUrl;
+                downloadBtn.download = fileName;
                 downloadBtn.addEventListener('click', handleDownloadClick);
-            }
-        }
-        
-        // الحصول على رابط التحميل المباشر
-        async function getDirectDownloadLink() {
-            try {
-                // في نظام حقيقي، هنا نطلب رابط التحميل من السيرفر
-                // لكن في هذا النظام البسيط، نستخدم رابط تلجرام المباشر
-                
-                // أولاً نحتاج للحصول على file_id من تلجرام
-                // هذا مثال مبسط - في النظام الحقيقي تحتاج لتخزين file_id مع fileId
-                
-                // إنشاء رابط وهمي (في الواقع، يجب أن يكون file_id مخزنًا مسبقًا)
-                return `https://api.telegram.org/file/bot${TELEGRAM_CONFIG.BOT_TOKEN}/documents/${fileId}`;
-            } catch (error) {
-                console.error('Error getting download link:', error);
-                return '#';
-            }
-        }
-        
-        // بدء التحميل المباشر
-        async function initiateDirectDownload() {
-            try {
-                const directLink = await getDirectDownloadLink();
-                
-                // إنشاء عنصر a خفي للتحميل
-                const a = document.createElement('a');
-                a.href = directLink;
-                a.download = fileName;
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                
-                // تحديث الواجهة
-                loadingContainer.innerHTML = `
-                    <div style="color: var(--success); font-size: 4rem; margin-bottom: 20px;">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3>بدأ التحميل!</h3>
-                    <p>إذا لم يبدأ التحميل تلقائيًا، <a href="${directLink}" style="color: var(--success); font-weight: 600;">انقر هنا</a></p>
-                    <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
-                        <i class="fas fa-info-circle"></i> يتم تنزيل الملف: ${fileName}
-                    </p>
-                `;
-                
-            } catch (error) {
-                loadingContainer.innerHTML = `
-                    <div style="color: var(--danger); font-size: 4rem; margin-bottom: 20px;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <h3>حدث خطأ!</h3>
-                    <p>تعذر بدء التحميل: ${error.message}</p>
-                    <p style="margin-top: 20px;">
-                        <a href="index.html" style="color: var(--success); text-decoration: none; font-weight: 600;">
-                            <i class="fas fa-home"></i> العودة للصفحة الرئيسية
-                        </a>
-                    </p>
-                `;
+            } else {
+                downloadBtn.style.opacity = '0.5';
+                downloadBtn.style.cursor = 'not-allowed';
+                downloadBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    alert('عذراً، تعذر العثور على الملف');
+                });
             }
         }
         
@@ -429,24 +350,32 @@
         function handleDownloadClick(e) {
             e.preventDefault();
             
-            // إظهار رسالة تأكيد
-            fileDescription.textContent = 'جاري التوجيه إلى رابط التحميل...';
-            detailStatus.textContent = 'جاري التحميل';
+            // تغيير حالة الزر
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
+            downloadBtn.style.pointerEvents = 'none';
             
-            // التوجيه بعد تأخير قصير
+            // تغيير حالة الملف
+            detailStatus.textContent = 'جاري التحميل...';
+            fileDescription.textContent = 'جاري بدء عملية التحميل، يرجى الانتظار...';
+            
+            // بدء التحميل بعد تأخير قصير
             setTimeout(() => {
-                window.location.href = downloadBtn.href;
+                // فتح الرابط في نافذة جديدة لبدء التحميل
+                window.open(downloadBtn.href, '_blank');
+                
+                // استعادة حالة الزر
+                setTimeout(() => {
+                    downloadBtn.innerHTML = originalText;
+                    downloadBtn.style.pointerEvents = 'auto';
+                    detailStatus.textContent = 'تم بدء التحميل';
+                    fileDescription.textContent = 'تم بدء عملية التحميل، تحقق من متصفحك';
+                }, 2000);
             }, 1000);
         }
         
         // تهيئة الصفحة عند التحميل
         document.addEventListener('DOMContentLoaded', initPage);
-        
-        // إضافة رسالة ترحيب في الكونسول
-        console.log('🚀 نظام رفع الملفات الآمن جاهز!');
-        console.log('📁 معرف الملف:', fileId);
-        console.log('📄 اسم الملف:', fileName);
-        console.log('🔗 نوع التحميل:', downloadType === 'direct' ? 'مباشر' : 'زر تحميل');
     </script>
 </body>
 </html>
