@@ -1,129 +1,259 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upload File</title>
-<style>
-body { font-family: Arial; background:#f5f5f5; text-align:center; padding:50px;}
-.card { background:#fff; padding:30px; border-radius:20px; display:inline-block; box-shadow:0 5px 15px rgba(0,0,0,0.2);}
-input, button { margin:10px; padding:12px 20px; font-size:16px;}
-button { cursor:pointer; border:none; border-radius:10px; transition:.3s;}
-button:hover { opacity:.8;}
-#status { margin-top:20px; color:#333;}
-</style>
-</head>
-<body>
-<div class="card">
-<h2>Upload File</h2>
-<input type="file" id="fileInput"><br>
-<button onclick="upload('button')">Upload + Button Page</button>
-<button onclick="upload('direct')">Upload + Direct Page</button>
-<div id="status"></div>
-</div>
-
-<script>
-const BOT_TOKEN = '8552707260:AAFzSMfDkJbX_egvxFK7uoS6fmaepH90CSM';
-const CHAT_ID = '1905862979';
-
-async function upload(type){
-    const file = document.getElementById('fileInput').files[0];
-    if(!file) return alert('Select a file');
-    const status = document.getElementById('status');
-    status.innerText='Uploading...';
-
-    try {
-        const { fileUrl, name } = await uploadFile(file);
-        let htmlContent = '';
-        if(type==='button'){
-            htmlContent = generateButtonPage(name, fileUrl);
-        } else {
-            htmlContent = generateDirectPage(name, fileUrl);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رفع الملفات - اختيار النوع</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        const blob = new Blob([htmlContent], {type:'text/html'});
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${name}-${type}.html`;
-        link.innerText = `Download ${type} page`;
-        status.innerHTML='';
-        status.appendChild(link);
-
-    } catch(e){
-        alert('Error: '+e.message);
-        status.innerText='';
-    }
-}
-
-async function uploadFile(file){
-    const form = new FormData();
-    form.append('chat_id', CHAT_ID);
-    form.append('document', file);
-
-    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
-        method:'POST',
-        body: form
-    }).then(r=>r.json());
-
-    if(!res.ok) throw new Error(res.description);
-
-    const fileId = res.result.document.file_id;
-    const info = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`)
-        .then(r=>r.json());
-
-    const filePath = info.result.file_path;
-    const fileUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${filePath}`;
-    return { fileUrl, name: file.name };
-}
-
-// توليد صفحة الزر
-function generateButtonPage(name, fileUrl){
-    return `
-<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${name}</title>
-<style>
-body { text-align:center; padding:50px; font-family:Arial; background:#f5f5f5; }
-.card { background:#fff; padding:30px; border-radius:20px; display:inline-block; box-shadow:0 5px 15px rgba(0,0,0,0.2);}
-button { padding:15px 30px; background:#28a745; color:#fff; border:none; border-radius:12px; cursor:pointer; font-size:16px;}
-button:hover { background:#1e7e34;}
-</style>
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            margin: 20px;
+            animation: fadeIn 0.8s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .content {
+            padding: 40px 25px;
+        }
+        
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .option-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .option-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            font-size: 2.5rem;
+        }
+        
+        .option-card:nth-child(1) .option-icon {
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+        }
+        
+        .option-card:nth-child(2) .option-icon {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+        
+        .option-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .option-card p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .features {
+            text-align: right;
+            margin-top: 20px;
+            padding: 0 10px;
+            width: 100%;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature i {
+            margin-left: 10px;
+            color: #4facfe;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .warning {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid rgba(255, 107, 107, 0.4);
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        
+        @media (max-width: 768px) {
+            .options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .option-card {
+                width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 30px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="card">
-<h2>${name}</h2>
-<button id="dlBtn">Download Now</button>
-</div>
-<script>
-document.getElementById('dlBtn').addEventListener('click', function(){
-    const url = '${fileUrl}';
-    this.disabled=true;
-    window.location.href = url;
-});
-</script>
-</body>
-</html>
-`;
-}
-
-// توليد صفحة التحميل المباشر
-function generateDirectPage(name, fileUrl){
-    return `
-<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${name}</title>
-<meta http-equiv="refresh" content="0;url=${fileUrl}">
-</head>
-<body>
-<p>Downloading ${name}...</p>
-</body>
-</html>
-`;
-}
-</script>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-cloud-upload-alt"></i> نظام رفع الملفات المتقدم</h1>
+            <p>اختر طريقة التحميل المناسبة لاحتياجاتك. جميع الطرق آمنة ولا تظهر أي معلومات حساسة للمستخدم.</p>
+        </div>
+        
+        <div class="content">
+            <div class="options">
+                <a href="upload.html?type=1" class="option-card">
+                    <div class="option-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h3>النوع الأول</h3>
+                    <p>رفع ملف وتحويله إلى رابط. عند الدخول على الرابط تفتح صفحة تحتوي على زر، وعند الضغط على الزر يتم توليد رابط تحميل مباشر.</p>
+                    
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>صفحة وسيطة مع زر تحميل</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>توليد رابط مباشر عند الضغط</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>حماية كاملة للتوكن</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="upload.html?type=2" class="option-card">
+                    <div class="option-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>النوع الثاني</h3>
+                    <p>رفع ملف وتحويله إلى رابط مباشر. عند الدخول على الرابط تفتح صفحة فارغة ويبدأ التحميل المباشر تلقائيًا.</p>
+                    
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>تحميل مباشر تلقائي</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>لا يوجد صفحة وسيطة</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>حماية كاملة للتوكن</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                الحد الأقصى لحجم الملف هو 50 ميجابايت | يتم إرسال الملف إلى بوت تلجرام تلقائيًا
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>جميع الحقوق محفوظة © 2023 | النظام لا يعرض التوكن الخاص ببوت تلجرام للمستخدمين</p>
+        </div>
+    </div>
 </body>
 </html>
