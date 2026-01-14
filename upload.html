@@ -1,28 +1,671 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FILE_NAME</title>
-<style>
-body { text-align:center; padding:50px; font-family:Arial; background:#f5f5f5; }
-.card { background:#fff; padding:30px; border-radius:20px; display:inline-block; box-shadow:0 5px 15px rgba(0,0,0,0.2);}
-button { padding:15px 30px; background:#28a745; color:#fff; border:none; border-radius:12px; cursor:pointer; font-size:16px;}
-button:hover { background:#1e7e34;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رفع الملف</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            margin: 20px;
+            animation: fadeIn 0.8s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .back-btn {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .content {
+            padding: 30px 25px;
+        }
+        
+        .upload-area {
+            border: 3px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 50px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .upload-area:hover, .upload-area.dragover {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .upload-text h3 {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+        
+        .upload-text p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+        
+        .browse-btn {
+            display: inline-block;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: white;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .browse-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .selected-file {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: none;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .file-icon {
+            font-size: 2.5rem;
+            color: #4facfe;
+            margin-left: 20px;
+        }
+        
+        .file-info h4 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+        
+        .file-info p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+        
+        .upload-btn {
+            width: 100%;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: white;
+            padding: 18px;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .upload-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-container {
+            display: none;
+            margin-top: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .type-indicator {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .type-1 {
+            background: rgba(255, 126, 95, 0.3);
+            color: #ff7e5f;
+            border: 1px solid rgba(255, 126, 95, 0.5);
+        }
+        
+        .type-2 {
+            background: rgba(79, 172, 254, 0.3);
+            color: #4facfe;
+            border: 1px solid rgba(79, 172, 254, 0.5);
+        }
+        
+        .result-container {
+            display: none;
+            margin-top: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            animation: slideIn 0.5s ease;
+        }
+        
+        .result-icon {
+            font-size: 3.5rem;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        
+        .result-container h3 {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .link-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: right;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .link-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #4facfe;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .link-value {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px;
+            border-radius: 8px;
+            word-break: break-all;
+            direction: ltr;
+            font-size: 0.95rem;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .upload-icon {
+                font-size: 3rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="card">
-<h2>FILE_NAME</h2>
-<button id="dlBtn">Download Now</button>
-</div>
-<script>
-document.getElementById('dlBtn').addEventListener('click', function(){
-    const url = 'FILE_URL'; // يتم توليده ديناميكيًا فقط عند الضغط
-    this.disabled=true;
-    window.location.href = url;
-});
-</script>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i></a>
+            <h1><i class="fas fa-cloud-upload-alt"></i> رفع الملف</h1>
+            <p>الحد الأقصى لحجم الملف هو 50 ميجابايت</p>
+        </div>
+        
+        <div class="content">
+            <!-- مؤشر نوع الرفع -->
+            <div id="type-indicator" class="type-indicator type-1">
+                <i class="fas fa-link"></i> النوع الأول: صفحة وسيطة مع زر تحميل
+            </div>
+            
+            <!-- منطقة رفع الملف -->
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">
+                    <h3>اسحب وأفلت الملف هنا</h3>
+                    <p>أو انقر لاختيار ملف من جهازك</p>
+                    <div class="browse-btn" id="browse-btn">استعرض الملفات</div>
+                </div>
+                <input type="file" class="file-input" id="file-input">
+            </div>
+            
+            <!-- معلومات الملف المحدد -->
+            <div class="selected-file" id="selected-file">
+                <div class="file-icon">
+                    <i class="fas fa-file"></i>
+                </div>
+                <div class="file-info">
+                    <h4 id="file-name">اسم الملف</h4>
+                    <p id="file-size">حجم الملف</p>
+                </div>
+            </div>
+            
+            <!-- زر رفع الملف -->
+            <button class="upload-btn" id="upload-btn" disabled>
+                <i class="fas fa-upload"></i> رفع الملف وإرساله إلى تلجرام
+            </button>
+            
+            <!-- شريط التقدم -->
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-text" id="progress-text">جاري الرفع 0%</div>
+            </div>
+            
+            <!-- نتيجة الرفع -->
+            <div class="result-container" id="result-container">
+                <div class="result-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>تم رفع الملف بنجاح!</h3>
+                <p>تم إرسال الملف إلى بوت تلجرام وتوليد رابط التحميل</p>
+                
+                <div class="link-box">
+                    <div class="link-label">
+                        <i class="fas fa-link"></i> رابط التحميل الخاص بك:
+                    </div>
+                    <div class="link-value" id="download-link">https://example.com/download.html?id=FILE_ID</div>
+                </div>
+                
+                <button class="copy-btn" id="copy-btn">
+                    <i class="far fa-copy"></i> نسخ الرابط
+                </button>
+                
+                <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">
+                    <i class="fas fa-info-circle"></i> سيتم إرسال الرابط إلى بوت تلجرام أيضًا
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>يتم إرسال الملف إلى بوت تلجرام تلقائيًا دون عرض التوكن للمستخدم</p>
+        </div>
+    </div>
+
+    <script>
+        // الحصول على نوع الرفع من URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const uploadType = urlParams.get('type') || '1';
+        
+        // العناصر الرئيسية
+        const typeIndicator = document.getElementById('type-indicator');
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const browseBtn = document.getElementById('browse-btn');
+        const selectedFile = document.getElementById('selected-file');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+        const uploadBtn = document.getElementById('upload-btn');
+        const progressContainer = document.getElementById('progress-container');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const resultContainer = document.getElementById('result-container');
+        const downloadLink = document.getElementById('download-link');
+        const copyBtn = document.getElementById('copy-btn');
+        
+        let selectedFileData = null;
+        
+        // تهيئة نوع الرفع
+        function initUploadType() {
+            if (uploadType === '2') {
+                typeIndicator.className = 'type-indicator type-2';
+                typeIndicator.innerHTML = '<i class="fas fa-bolt"></i> النوع الثاني: تحميل مباشر تلقائي';
+            } else {
+                typeIndicator.className = 'type-indicator type-1';
+                typeIndicator.innerHTML = '<i class="fas fa-link"></i> النوع الأول: صفحة وسيطة مع زر تحميل';
+            }
+        }
+        
+        // تحويل البايتات إلى صيغة مقروءة
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+        
+        // التحقق من حجم الملف
+        function isValidFileSize(file) {
+            const maxSize = 50 * 1024 * 1024; // 50 MB
+            return file.size <= maxSize;
+        }
+        
+        // عرض معلومات الملف المحدد
+        function showFileInfo(file) {
+            selectedFile.style.display = 'flex';
+            fileName.textContent = file.name;
+            fileSize.textContent = formatBytes(file.size);
+            uploadBtn.disabled = false;
+        }
+        
+        // عرض تقدم الرفع
+        function showProgress(percent) {
+            progressContainer.style.display = 'block';
+            progressFill.style.width = `${percent}%`;
+            progressText.textContent = `جاري الرفع ${Math.round(percent)}%`;
+            
+            if (percent >= 100) {
+                progressText.textContent = 'جاري إنشاء الرابط...';
+            }
+        }
+        
+        // إنشاء رابط تحميل وهمي (في الواقع سيتم توليده من السيرفر)
+        function generateDownloadLink(fileId) {
+            const baseUrl = window.location.origin;
+            return `${baseUrl}/download.html?id=${fileId}&type=${uploadType}`;
+        }
+        
+        // إرسال الملف إلى السيرفر (محاكاة)
+        async function uploadFile() {
+            if (!selectedFileData) {
+                alert('الرجاء اختيار ملف أولاً');
+                return;
+            }
+            
+            if (!isValidFileSize(selectedFileData)) {
+                alert('حجم الملف يتجاوز الحد المسموح به (50 ميجابايت)');
+                return;
+            }
+            
+            // تعطيل زر الرفع
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
+            
+            // عرض شريط التقدم
+            showProgress(0);
+            
+            try {
+                // محاكاة عملية الرفع
+                for (let i = 0; i <= 100; i += 10) {
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    showProgress(i);
+                }
+                
+                // هنا يتم إرسال الملف فعليًا إلى السيرفر
+                // يتم التعامل مع إرسال الملف إلى بوت تلجرام في السيرفر
+                // للحماية وعدم عرض التوكن للمستخدم
+                
+                // توليد معرف ملف عشوائي
+                const fileId = 'file_' + Math.random().toString(36).substring(2, 15);
+                
+                // إنشاء رابط التحميل
+                const link = generateDownloadLink(fileId);
+                
+                // محاكاة نجاح الرفع
+                setTimeout(() => {
+                    // إخفاء عناصر الرفع
+                    uploadArea.style.display = 'none';
+                    selectedFile.style.display = 'none';
+                    uploadBtn.style.display = 'none';
+                    progressContainer.style.display = 'none';
+                    
+                    // عرض نتيجة الرفع
+                    downloadLink.textContent = link;
+                    resultContainer.style.display = 'block';
+                    
+                    // إرسال الرابط إلى بوت تلجرام (محاكاة)
+                    sendToTelegram(link, fileId);
+                }, 1000);
+                
+            } catch (error) {
+                alert('حدث خطأ أثناء رفع الملف: ' + error.message);
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-upload"></i> رفع الملف وإرساله إلى تلجرام';
+                progressContainer.style.display = 'none';
+            }
+        }
+        
+        // إرسال الرابط إلى بوت تلجرام (محاكاة)
+        function sendToTelegram(link, fileId) {
+            // في الواقع، هنا سيتم استخدام fetch لإرسال البيانات إلى السيرفر
+            // الذي سيرسلها إلى بوت تلجرام باستخدام التوكن المخفي
+            console.log('إرسال إلى تلجرام:', {
+                fileId: fileId,
+                downloadLink: link,
+                uploadType: uploadType
+            });
+            
+            // محاكاة إرسال إلى السيرفر
+            setTimeout(() => {
+                console.log('تم إرسال الرابط إلى بوت تلجرام بنجاح');
+            }, 500);
+        }
+        
+        // نسخ الرابط إلى الحافظة
+        function copyToClipboard() {
+            const text = downloadLink.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> تم النسخ!';
+                copyBtn.style.background = 'rgba(76, 175, 80, 0.3)';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.style.background = 'rgba(255, 255, 255, 0.1)';
+                }, 2000);
+            }).catch(err => {
+                alert('فشل نسخ الرابط: ' + err);
+            });
+        }
+        
+        // إعداد مستمعي الأحداث
+        function setupEventListeners() {
+            browseBtn.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    
+                    if (!isValidFileSize(file)) {
+                        alert('حجم الملف يتجاوز الحد المسموح به (50 ميجابايت)');
+                        fileInput.value = '';
+                        return;
+                    }
+                    
+                    selectedFileData = file;
+                    showFileInfo(file);
+                }
+            });
+            
+            // سحب وإفلات الملف
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+                    
+                    if (!isValidFileSize(file)) {
+                        alert('حجم الملف يتجاوز الحد المسموح به (50 ميجابايت)');
+                        return;
+                    }
+                    
+                    selectedFileData = file;
+                    showFileInfo(file);
+                }
+            });
+            
+            uploadBtn.addEventListener('click', uploadFile);
+            copyBtn.addEventListener('click', copyToClipboard);
+        }
+        
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            initUploadType();
+            setupEventListeners();
+        });
+    </script>
 </body>
 </html>
-
