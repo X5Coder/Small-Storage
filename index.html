@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>رفع الملفات - اختيار النوع</title>
+    <title>نظام رفع الملفات الآمن</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -13,9 +13,18 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        
         body {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: #fff;
+            color: var(--light);
             min-height: 100vh;
             padding: 20px;
             display: flex;
@@ -27,7 +36,7 @@
         .container {
             width: 100%;
             max-width: 800px;
-            background-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
@@ -44,97 +53,93 @@
         
         .header {
             background: rgba(0, 0, 0, 0.3);
-            padding: 30px 20px;
+            padding: 40px 30px;
             text-align: center;
         }
         
         .header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .header p {
+            font-size: 1.2rem;
             opacity: 0.9;
-            font-size: 1.1rem;
+            line-height: 1.6;
             max-width: 600px;
             margin: 0 auto;
-            line-height: 1.6;
         }
         
         .content {
-            padding: 40px 25px;
+            padding: 40px 30px;
         }
         
-        .options {
-            display: flex;
-            flex-wrap: wrap;
+        .upload-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
-            justify-content: center;
-            margin-top: 20px;
+            margin-bottom: 40px;
         }
         
-        .option-card {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
+        .type-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
             padding: 30px;
-            width: 100%;
-            max-width: 350px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.4s ease;
+            transition: all 0.3s ease;
             border: 2px solid transparent;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            cursor: pointer;
             text-decoration: none;
             color: inherit;
+            display: block;
         }
         
-        .option-card:hover {
+        .type-card:hover {
             transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--success);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
         
-        .option-icon {
-            width: 100px;
-            height: 100px;
+        .type-icon {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 25px;
-            font-size: 2.5rem;
+            margin: 0 auto 25px;
+            font-size: 2.2rem;
         }
         
-        .option-card:nth-child(1) .option-icon {
-            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+        .type-card:nth-child(1) .type-icon {
+            background: linear-gradient(135deg, #4cc9f0, #4361ee);
         }
         
-        .option-card:nth-child(2) .option-icon {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        .type-card:nth-child(2) .type-icon {
+            background: linear-gradient(135deg, #7209b7, #f72585);
         }
         
-        .option-card h3 {
+        .type-card h3 {
             font-size: 1.8rem;
             margin-bottom: 15px;
-            color: #fff;
+            text-align: center;
+            color: var(--light);
         }
         
-        .option-card p {
+        .type-card p {
             font-size: 1rem;
             line-height: 1.6;
             margin-bottom: 20px;
             opacity: 0.9;
+            text-align: center;
         }
         
         .features {
-            text-align: right;
             margin-top: 20px;
-            padding: 0 10px;
-            width: 100%;
         }
         
         .feature {
@@ -147,7 +152,43 @@
         
         .feature i {
             margin-left: 10px;
-            color: #4facfe;
+            color: var(--success);
+            font-size: 1.1rem;
+        }
+        
+        .info-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .info-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .info-item i {
+            color: var(--success);
         }
         
         .footer {
@@ -158,33 +199,21 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .warning {
-            background: rgba(255, 107, 107, 0.2);
-            border: 1px solid rgba(255, 107, 107, 0.4);
-            color: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 30px;
-            text-align: center;
-            font-size: 0.95rem;
-        }
-        
         @media (max-width: 768px) {
-            .options {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .option-card {
-                width: 100%;
+            .upload-types {
+                grid-template-columns: 1fr;
             }
             
             .header h1 {
-                font-size: 1.8rem;
+                font-size: 2rem;
+            }
+            
+            .header {
+                padding: 30px 20px;
             }
             
             .content {
-                padding: 30px 15px;
+                padding: 30px 20px;
             }
         }
     </style>
@@ -192,67 +221,84 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-cloud-upload-alt"></i> نظام رفع الملفات المتقدم</h1>
-            <p>اختر طريقة التحميل المناسبة لاحتياجاتك. جميع الطرق آمنة ولا تظهر أي معلومات حساسة للمستخدم.</p>
+            <h1><i class="fas fa-shield-alt"></i> نظام رفع الملفات الآمن</h1>
+            <p>رفع الملفات إلى سحابة آمنة مع روابط تحميل مخصصة. اختر الطريقة المناسبة لاحتياجاتك.</p>
         </div>
         
         <div class="content">
-            <div class="options">
-                <a href="upload.html?type=1" class="option-card">
-                    <div class="option-icon">
-                        <i class="fas fa-link"></i>
+            <div class="upload-types">
+                <a href="upload.html?type=button" class="type-card">
+                    <div class="type-icon">
+                        <i class="fas fa-download"></i>
                     </div>
-                    <h3>النوع الأول</h3>
-                    <p>رفع ملف وتحويله إلى رابط. عند الدخول على الرابط تفتح صفحة تحتوي على زر، وعند الضغط على الزر يتم توليد رابط تحميل مباشر.</p>
+                    <h3>زر تحميل</h3>
+                    <p>صفحة وسيطة مع زر تحميل. مناسب عندما تريد إضافة وصف أو معلومات إضافية حول الملف.</p>
                     
                     <div class="features">
                         <div class="feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>صفحة وسيطة مع زر تحميل</span>
+                            <span>صفحة تحميل مخصصة</span>
                         </div>
                         <div class="feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>توليد رابط مباشر عند الضغط</span>
+                            <span>زر تحميل واضح</span>
                         </div>
                         <div class="feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>حماية كاملة للتوكن</span>
+                            <span>خيارات إضافية</span>
                         </div>
                     </div>
                 </a>
                 
-                <a href="upload.html?type=2" class="option-card">
-                    <div class="option-icon">
+                <a href="upload.html?type=direct" class="type-card">
+                    <div class="type-icon">
                         <i class="fas fa-bolt"></i>
                     </div>
-                    <h3>النوع الثاني</h3>
-                    <p>رفع ملف وتحويله إلى رابط مباشر. عند الدخول على الرابط تفتح صفحة فارغة ويبدأ التحميل المباشر تلقائيًا.</p>
+                    <h3>تحميل مباشر</h3>
+                    <p>تحميل فوري دون صفحات وسيطة. مثالي للمستخدمين الذين يريدون تجربة سريعة ومباشرة.</p>
                     
                     <div class="features">
                         <div class="feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>تحميل مباشر تلقائي</span>
+                            <span>تحميل فوري</span>
                         </div>
                         <div class="feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>لا يوجد صفحة وسيطة</span>
+                            <span>بدون صفحات وسيطة</span>
                         </div>
                         <div class="feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>حماية كاملة للتوكن</span>
+                            <span>أقصى سرعة</span>
                         </div>
                     </div>
                 </a>
             </div>
             
-            <div class="warning">
-                <i class="fas fa-exclamation-triangle"></i>
-                الحد الأقصى لحجم الملف هو 50 ميجابايت | يتم إرسال الملف إلى بوت تلجرام تلقائيًا
+            <div class="info-section">
+                <h3><i class="fas fa-info-circle"></i> معلومات النظام</h3>
+                <div class="info-list">
+                    <div class="info-item">
+                        <i class="fas fa-lock"></i>
+                        <span>آمن تماماً - لا تظهر التوكنات</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-link"></i>
+                        <span>روابط فريدة لكل ملف</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-cloud"></i>
+                        <span>تخزين سحابي على تلجرام</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>50MB الحد الأقصى للملف</span>
+                    </div>
+                </div>
             </div>
         </div>
         
         <div class="footer">
-            <p>جميع الحقوق محفوظة © 2023 | النظام لا يعرض التوكن الخاص ببوت تلجرام للمستخدمين</p>
+            <p>جميع الملفات محمية ولا يتم مشاركة أي معلومات حساسة. يتم استخدام UUID فريد لكل ملف.</p>
         </div>
     </div>
 </body>
